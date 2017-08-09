@@ -71,6 +71,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     private boolean mNextLoadEnable = false;
     private boolean mLoadMoreEnable = false;
     private boolean mLoading = false;
+
+    //auto loadMore when setAdapter
+    private boolean mAutoLoadMore = true;
+
     private LoadMoreView mLoadMoreView = new SimpleLoadMoreView();
     private RequestLoadMoreListener mRequestLoadMoreListener;
     private boolean mEnableLoadMoreEndClick = false;
@@ -236,6 +240,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
                 }
             }, 50);
         }
+    }
+
+
+    public void isAutoLoadMore(boolean mAutoLoadMore) {
+        this.mAutoLoadMore = mAutoLoadMore;
     }
 
     private int getTheBiggestNumber(int[] numbers) {
@@ -916,7 +925,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      */
     @Override
     public void onBindViewHolder(K holder, int position) {
-        //Add up fetch logic, almost like load more, but simpler.
+//        Add up fetch logic, almost like load more, but simpler.
         autoUpFetch(position);
         //Do not move position, need to change before LoadMoreView binding
         autoLoadMore(position);
@@ -1408,6 +1417,9 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
     private void autoLoadMore(int position) {
+        if (!mAutoLoadMore) {
+            return;
+        }
         if (getLoadMoreViewCount() == 0) {
             return;
         }
@@ -1417,6 +1429,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         if (mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
             return;
         }
+
+
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
         if (!mLoading) {
             mLoading = true;
